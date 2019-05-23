@@ -19,10 +19,6 @@ app.get('/', (req, res) => {
 });
 
 
-// Not found middleware
-app.use((req, res, next) => {
-  return next({status: 404, message: 'not found'})
-})
 
 
 require('./app.js');
@@ -30,11 +26,23 @@ require('./app.js');
 const User = mongoose.model('User');
 const Exercise = mongoose.model('Exercise');
 
-app.post('/api/exercise/new-user', (req, res) => {
-const user = new User({ name: req.body.username });
-    user.save((err, data) => err);
+app.post('/api/exercise/new-user', (req, res, next) => {
+  const user = new User({ name: req.body.username });
+  user.save((err, data) => err ? next(err) : res.json(data));
+})
+app.post('/api/exercise/add', (req, res, next) => {
+  if(!req.body.userId) return next({ message: 'valid userid required'})
+  const ex = new Exercise(req.body)
+  ex.save((err, data) => err ? next(err) : res.json(data));
   
-  
+})
+// GET /api/exercise/log?{userId}[&from][&to][&limit]
+app.get('/api/exercise/log')
+
+// Not found middleware
+app.use((err, req, res, next) => {
+  if(err) return next(err);
+  return next({status: 404, message: 'not found'})
 })
 
 // Error Handling middleware
