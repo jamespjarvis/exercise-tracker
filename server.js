@@ -32,6 +32,9 @@ app.post('/api/exercise/new-user', (req, res, next) => {
 })
 app.post('/api/exercise/add', (req, res, next) => {
   if(!req.body.userId) return next({ message: 'valid userid required'})
+  
+  
+  
   const ex = new Exercise(req.body)
   ex.save((err, data) => err ? next(err) : res.json(data));
   
@@ -48,13 +51,12 @@ app.get('/api/exercise/log', (req, res, next) => {
   
   query.from = req.query.from ? new Date(req.query.from) : new Date(0);
   query.to = req.query.to ? new Date(req.query.to) : new Date();
-  query.limit = req.query.limit || 3;
+  query.limit = parseInt(req.query.limit) || 3;
   
   
   
   Exercise
-    .find({ userId: req.query.userId })
-    .where('createdAt').gte(query.from).lte(query.to)
+    .find({ userId: req.query.userId, date: { '$gte': req.query.from, '$lte': req.query.to } })
     .limit(query.limit)
     .exec((err, result) => err ? next(err) : res.json(result))
   

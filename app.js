@@ -7,7 +7,7 @@ const exerciseSchema = new Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   description: {type: String, required: true },
   duration: { type: Number, required: true },
-  date: { type: Date, default: Date.now, required: true }
+  date: { type: Date, default: Date.now }
 })
 
 mongoose.model('User', userSchema);
