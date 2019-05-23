@@ -33,8 +33,8 @@ app.post('/api/exercise/new-user', (req, res, next) => {
 app.post('/api/exercise/add', (req, res, next) => {
   if(!req.body.userId) return next({ message: 'valid userid required'})
   
-  
-  
+  req.body.date = new Date(req.body.date);
+  console.log(typeof req.body.date)
   const ex = new Exercise(req.body)
   ex.save((err, data) => err ? next(err) : res.json(data));
   
