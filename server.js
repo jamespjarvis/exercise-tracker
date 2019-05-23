@@ -37,7 +37,28 @@ app.post('/api/exercise/add', (req, res, next) => {
   
 })
 // GET /api/exercise/log?{userId}[&from][&to][&limit]
-app.get('/api/exercise/log')
+app.get('/api/exercise/users', (req, res, next) => {
+  User.find({}, (err, data) => err ? next(err) : res.json(data));
+})
+app.get('/api/exercise/log', (req, res, next) => {
+  if(!req.query.userId) return next({ message: 'valid userid required' });
+  
+  const query = {};
+  
+  
+  query.from = req.query.from ? new Date(req.query.from) : new Date(0);
+  query.to = req.query.to ? new Date(req.query.to) : new Date();
+  query.limit = req.query.limit || 3;
+  
+  
+  
+  Exercise
+    .find({ userId: req.query.userId })
+    .where('createdAt').gte(query.from).lte(query.to)
+    .limit(query.limit)
+    .exec((err, result) => err ? next(err) : res.json(result))
+  
+})
 
 // Not found middleware
 app.use((err, req, res, next) => {
